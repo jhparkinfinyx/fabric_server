@@ -1,0 +1,51 @@
+- static/images/ 
+    Replace filename, 20 images below:
+
+id  | name                           
+-----+--------------------------------
+  17 | TA01Y-0141@DK@DSS134?BC#CL02   
+  30 | TA01Y-0143@DK@DSP134#SV01      
+  82 | TA01Y-0137@DK@NYC620?D#PP01    
+  88 | TA01Y-0123@YP@#4796            
+ 127 | TA01Y-0140@DK@DSSB522S?FM#GD01 
+ 133 | TA01Y-0119@YP@#YPS-19476       
+ 152 | TA01Y-0031@SS@HQ1045#3 WINE    
+ 174 | TA01Y-0118@YP@#1002            
+ 185 | TA01Y-0122@YP@#1138            
+ 193 | TA01Y-0121@YP@#4511            
+ 204 | TA01Y-0125@YP@#7172            
+ 230 | TA01Y-0120@YP@#1135            
+ 243 | TA01Y-0117@YP@#1840            
+ 266 | TA01Y-0124@YP@#4707            
+ 278 | TA01Y-0139@DK@CRYS618NT#RD01   
+ 292 | TA01Y-0142@DK@DSSB522S?P31#BK95
+ 384 | TA01Y-0146@DK@RSL729#CL03      
+ 414 | TA01Y-0126@YP@#2730            
+ 418 | TA01Y-0138@DK@NYC736?D#SV01    
+ 436 | SC#4_SP_U048 FOIL TERRAZZO BLUE
+
+
+to
+
+id  | name                            
+-----+---------------------------------
+  17 | TA01Y-0141@DK@DSS134?BC_CL02    
+  30 | TA01Y-0143@DK@DSP134_SV01       
+  82 | TA01Y-0137@DK@NYC620?D_PP01     
+  88 | TA01Y-0123@YP@_4796             
+ 127 | TA01Y-0140@DK@DSSB522S?FM_GD01  
+ 133 | TA01Y-0119@YP@_YPS-19476        
+ 152 | TA01Y-0031@SS@HQ1045_3 WINE     
+ 174 | TA01Y-0118@YP@_1002             
+ 185 | TA01Y-0122@YP@_1138             
+ 193 | TA01Y-0121@YP@_4511             
+ 204 | TA01Y-0125@YP@_7172             
+ 230 | TA01Y-0120@YP@_1135             
+ 243 | TA01Y-0117@YP@_1840             
+ 266 | TA01Y-0124@YP@_4707             
+ 278 | TA01Y-0139@DK@CRYS618NT_RD01    
+ 292 | TA01Y-0142@DK@DSSB522S?P31_BK95 
+ 384 | TA01Y-0146@DK@RSL729_CL03       
+ 414 | TA01Y-0126@YP@_2730             
+ 418 | TA01Y-0138@DK@NYC736?D_SV01     
+ 436 | SC_4_SP_U048 FOIL TERRAZZO BLUE 
