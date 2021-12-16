@@ -31,23 +31,23 @@ UPLOAD_FOLDER = './static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
-app = Flask(__name__, static_url_path='/static')
+application = Flask(__name__, static_url_path='/static')
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.config.update(
+application.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
     CELERY_RESULT_BACKEND='redis://localhost:6379'
 )
 
-app.config['JSON_AS_ASCII'] = False
+application.config['JSON_AS_ASCII'] = False
 
-# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-# celery.conf.update(app.config)
+# celery = Celery(application.name, broker=application.config['CELERY_BROKER_URL'])
+# celery.conf.update(application.config)
 
-# CORS(app)
-# CORS(app, resources={r'*': {'origins': 'http://localhost:3000'}}, supports_credentials=True)
-CORS(app, resources={r'*': {'origins': '*'}}, supports_credentials=True)
+# CORS(application)
+# CORS(application, resources={r'*': {'origins': 'http://localhost:3000'}}, supports_credentials=True)
+CORS(application, resources={r'*': {'origins': '*'}}, supports_credentials=True)
 
 imagenet_class_index = json.load(open('imagenet_class_index.json'))
 model = models.densenet121(pretrained=True)
@@ -83,7 +83,7 @@ def allowed_file(filename):
 # def asyncInferenceSimilerModel(data):
 #     print("asyncInferenceSimilerModel()")
     
-#     # with app.app_context():
+#     # with application.app_context():
 #         # 모델 작업 수행
     
 #     # string to bytes
@@ -116,7 +116,7 @@ def allowed_file(filename):
     Param : [number, ...]
     return [bytes, bytes]
 '''
-@app.route('/api/drape', methods=['post'])
+@application.route('/api/drape', methods=['post'])
 def image_drape():
     if request.method == 'POST':
         data = request.get_json()
@@ -137,7 +137,7 @@ def image_drape():
     Param : file(image)
     return [{img_row}, ...]
 '''  
-@app.route('/api/similarity', methods=['POST'])
+@application.route('/api/similarity', methods=['POST'])
 def image_similarity():
     if request.method == 'POST':
         file = request.files['file']
@@ -176,7 +176,7 @@ def image_similarity():
     Param : file(image), fileName
     return isSuccess
 '''  
-@app.route('/api/upload', methods=['POST'])
+@application.route('/api/upload', methods=['POST'])
 def image_upload():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -208,7 +208,7 @@ def image_upload():
         # print('filename: ', filename)
         
         name = os.path.splitext(filename)[0]
-        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)[2:]
+        path = os.path.join(application.config['UPLOAD_FOLDER'], filename)[2:]
         vector = vector_run(img_bytes)
         # print(path)
         
@@ -231,26 +231,26 @@ def image_upload():
     
     
 
-@app.route('/static/images/<image_file>')
+@application.route('/static/images/<image_file>')
 def image(image_file):
     # print(image_file)
     return send_from_directory('./static/images', image_file)
     # return render_template('img.html', image_file='images/'+image_file)
 
-# @app.route('/static/images')
+# @application.route('/static/images')
 # def image():
 #     name = request.args.get('name', default = '', type = str)
 #     print(name)
 #     return send_from_directory('./static/images', name)
 
 
-@app.route("/api/images", methods=['GET']) 
+@application.route("/api/images", methods=['GET']) 
 def images(): 
     rows = db.getImages("select vector, id, name, path from images ORDER BY id DESC", ())
     return jsonify(rows)
 
 
-@app.route('/api/image', methods=['POST']) 
+@application.route('/api/image', methods=['POST']) 
 def delete_image(): 
     if request.method == 'POST':
         data = request.form
@@ -266,19 +266,19 @@ def delete_image():
         db.setImages("delete from images where id=%s", (target_id))
         
         # # remove static file
-        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)[2:]
+        path = os.path.join(application.config['UPLOAD_FOLDER'], filename)[2:]
         os.remove(path)
         
         return jsonify({"isSuccess": 1, "message": "파일이 삭제 되었습니다."})
     
-@app.route("/") 
+@application.route("/") 
 def home(): 
     return "Dive Fabric"
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0')
-    app.run(host='0.0.0.0', port=9999, debug=True)
-    # app.run(host='127.0.0.1', port=8080)
+    # application.run(host='0.0.0.0')
+    application.run(host='0.0.0.0', port=9999, debug=True)
+    # application.run(host='127.0.0.1', port=8080)
 
 
 # def cleanup():
