@@ -21,11 +21,11 @@ import pymysql
 
 from modules.db import DBController
 
-from modules.similarity_model import similarity
+# from modules.similarity_model import similarity
 
-from model.similarity.dyetec_similar_test_211213 import run as similarity_run
+from model.similarity.dyetec_similar_test import run as similarity_run
 from model.gan.cCycle_test import run as gan_run
-from model.similarity.get_similarity_vector import run as vector_run
+# from model.similarity.get_similarity_vector import run as vector_run
 
 UPLOAD_FOLDER = './static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -124,12 +124,12 @@ def image_drape():
         # data = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]
 
        
-        img1, img2 = gan_run(data)
+        drape_coef, img1, img2 = gan_run(data)
         res1 = base64.b64encode(img1)
         res2 = base64.b64encode(img2)
-        print("response:",[res1.decode("utf-8"), res2.decode("utf-8")])
+        print("response:",[res1.decode("utf-8"), res2.decode("utf-8"), drape_coef])
         # return str(image)
-        return jsonify([res1.decode("utf-8"), res2.decode("utf-8")])
+        return jsonify([res1.decode("utf-8"), res2.decode("utf-8"), drape_coef])
     
 
 '''
@@ -165,75 +165,78 @@ def image_similarity():
         # task = asyncInferenceSimilerModel.delay(data)
         # response = task.get()
 
-        response = similarity_run(base64.b64decode(data['img_str']), data['img_rows'])
+        image_trans, results = similarity_run(base64.b64decode(data['img_str']), data['img_rows'])
+        image = base64.b64encode(image_trans)
 
-        print(response)
+        response = {"image": image.decode("utf-8"), "rows": results}
+
+        # print(response)
         return jsonify([response])
 
 
-'''
-    Name : Upload images
-    Param : file(image), fileName
-    return isSuccess
-'''  
-@application.route('/api/upload', methods=['POST'])
-def image_upload():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            print('No file part')
-            return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
+# '''
+#     Name : Upload images
+#     Param : file(image), fileName
+#     return isSuccess
+# '''  
+# @application.route('/api/upload', methods=['POST'])
+# def image_upload():
+#     if request.method == 'POST':
+#         if 'file' not in request.files:
+#             print('No file part')
+#             return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
         
-        file = request.files['file']
+#         file = request.files['file']
         
-        # bytes to string
-        img_str = base64.b64encode(file.read())
-        img_str = img_str.decode('utf-8')
-        # print("img_str: ", img_str[:100])
-        img_bytes = base64.b64decode(img_str)
+#         # bytes to string
+#         img_str = base64.b64encode(file.read())
+#         img_str = img_str.decode('utf-8')
+#         # print("img_str: ", img_str[:100])
+#         img_bytes = base64.b64decode(img_str)
         
-        if file.filename == '':
-            print('No selected file')
-            return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
+#         if file.filename == '':
+#             print('No selected file')
+#             return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
         
 
-        file_name = file.filename
-        # print('file_name: ', file_name)
+#         file_name = file.filename
+#         # print('file_name: ', file_name)
         
         
         
-        if not file or not allowed_file(file_name):
-             return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
+#         if not file or not allowed_file(file_name):
+#              return jsonify({"isSuccess": 0, "message": "파일이 존재하지 않습니다."})
          
-        filename = secure_filename(file_name)
-        # print('filename: ', filename)
+#         filename = secure_filename(file_name)
+#         # print('filename: ', filename)
         
-        name = os.path.splitext(filename)[0]
-        path = os.path.join(application.config['UPLOAD_FOLDER'], filename)[2:]
-        vector = vector_run(img_bytes)
-        # print(path)
+#         name = os.path.splitext(filename)[0]
+#         path = os.path.join(application.config['UPLOAD_FOLDER'], filename)[2:]
+#         vector = vector_run(img_bytes)
+#         # print(path)
         
-        # dup check
-        rows = db.getImages("select * from images where name=%s", (name))
-        # print("rows.length: ", len(rows))
-        if len(rows) > 0 :
-            return jsonify({"isSuccess": 0, "message": "파일이 이미 존재합니다."})
+#         # dup check
+#         rows = db.getImages("select * from images where name=%s", (name))
+#         # print("rows.length: ", len(rows))
+#         if len(rows) > 0 :
+#             return jsonify({"isSuccess": 0, "message": "파일이 이미 존재합니다."})
         
-        file.seek(0)
-        file.save(path)
+#         file.seek(0)
+#         file.save(path)
         
-        res = db.setImages("insert into images (name, path, vector) values (%s,%s,%s)", (name, path, str(vector)))
-        print(res)
+#         res = db.setImages("insert into images (name, path, vector) values (%s,%s,%s)", (name, path, str(vector)))
+#         print(res)
 
-        # response = similarity_run(base64.b64decode(data['img_str']), data['img_rows'])
+#         # response = similarity_run(base64.b64decode(data['img_str']), data['img_rows'])
 
-        # print(response)
-        return jsonify({"isSuccess": 1, "message": "파일 업로드 성공！", "img": [[], 1, name, path] })
+#         # print(response)
+#         return jsonify({"isSuccess": 1, "message": "파일 업로드 성공！", "img": [[], 1, name, path] })
     
     
 
 @application.route('/static/images/<image_file>')
 def image(image_file):
-    # print(image_file)
+    print(image_file)
     return send_from_directory('./static/images', image_file)
     # return render_template('img.html', image_file='images/'+image_file)
 
